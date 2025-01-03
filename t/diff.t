@@ -24,6 +24,18 @@ my @tests = (
       { path => ['k'], a => 1, b => undef }
     ]
   },
+  { a   => [ undef ],
+    b   => [ 1 ],
+    out => [
+      { path => ['0'], a => undef, b => 1 }
+    ]
+  },
+  { a   => [ 1 ],
+    b   => [ undef ],
+    out => [
+      { path => ['0'], a => 1, b => undef }
+    ]
+  },
   { a   => {Q => 1, W => 2, E => 3},
     b   => {W => 4, E => 3, R => 5},
     out => [  ##
