@@ -1,4 +1,5 @@
 package Data::Difference;
+# ABSTRACT: Compare simple hierarchical data
 
 use strict;
 use warnings;
@@ -88,10 +89,6 @@ sub _diff_ARRAY {
 1;
 
 __END__
-
-=head1 NAME
-
-Data::Difference - Compare simple hierarchical data
 
 =head1 SYNOPSYS
 
