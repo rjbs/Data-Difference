@@ -1,4 +1,5 @@
 {{$NEXT}}
+        - nothing new since the trial release
 
 0.113000  2025-01-03 15:27:19-05:00 America/New_York (TRIAL RELEASE)
         - no longer ignores keys/indexes with undef values in the left hand
