@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-use Scalar::Util qw(refaddr);
+use Scalar::Util ();
 
 our @EXPORT_OK = qw(data_diff);
 
@@ -32,7 +32,7 @@ sub _diff_HASH {
 
   return {path => \@path, a => $left, b => $right} unless ref($left) eq ref($right);
 
-  return if $seen->{ refaddr($left) . ':' . refaddr($right) }++;
+  return if $seen->{ Scalar::Util::refaddr($left) . ':' . Scalar::Util::refaddr($right) }++;
 
   my @diff;
   my %k;
@@ -64,7 +64,7 @@ sub _diff_ARRAY {
   my ($left, $right, $seen, @path) = @_;
   return {path => \@path, a => $left, b => $right} unless ref($left) eq ref($right);
 
-  return if $seen->{ refaddr($left) . ':' . refaddr($right) }++;
+  return if $seen->{ Scalar::Util::refaddr($left) . ':' . Scalar::Util::refaddr($right) }++;
 
   my @diff;
   my $n = $#$left > $#$right ? $#$left : $#$right;
