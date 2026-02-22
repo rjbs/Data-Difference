@@ -55,4 +55,59 @@ for my $i (0 .. $#tests) {
   );
 }
 
+subtest "circular structure" => sub {
+  {
+    my $a = { val => 1 };
+    $a->{self} = $a;
+
+    my $b = { val => 1 };
+    $b->{self} = $b;
+
+    eq_or_diff(
+      [data_diff($a, $b)],
+      [],
+      "identical cyclic structures: no diff",
+    );
+  }
+
+  {
+    my $a = { val => 1 };
+    $a->{self} = $a;
+
+    my $b = { val => 2 };
+    $b->{self} = $b;
+
+    eq_or_diff(
+      [data_diff($a, $b)],
+      [{path => ['val'], a => 1, b => 2}],
+      "cyclic structures differing in a scalar value: diff reported",
+    );
+  }
+
+  {
+    my $a = { val => 1 };
+    $a->{self} = $a;
+
+    eq_or_diff(
+      [data_diff($a, $a)],
+      [],
+      "cyclic structure compared to itself: no diff",
+    );
+  }
+
+  {
+    my $a = [[]];
+    push @{$a->[0]}, $a->[0];
+
+    my $b = [[]];
+    push @{$b->[0]}, $b->[0];
+
+    eq_or_diff(
+      [data_diff($a, $b)],
+      [],
+      "identical cyclic array structures: no diff",
+    );
+  }
+};
+
 done_testing();
