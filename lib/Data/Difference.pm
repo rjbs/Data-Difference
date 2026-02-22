@@ -5,6 +5,8 @@ use strict;
 use warnings;
 use base 'Exporter';
 
+use Scalar::Util qw(refaddr);
+
 our @EXPORT_OK = qw(data_diff);
 
 sub data_diff {
@@ -12,7 +14,7 @@ sub data_diff {
 
   if (ref($a)) {
     if (my $sub = __PACKAGE__->can("_diff_" . ref($a))) {
-      return $sub->($a, $b);
+      return $sub->($a, $b, {});
     }
     else {
       return {path => [], a => $a, b => $b};
@@ -26,9 +28,11 @@ sub data_diff {
 }
 
 sub _diff_HASH {
-  my ($a, $b, @path) = @_;
+  my ($a, $b, $seen, @path) = @_;
 
   return {path => \@path, a => $a, b => $b} unless ref($a) eq ref($b);
+
+  return if $seen->{ refaddr($a) . ':' . refaddr($b) }++;
 
   my @diff;
   my %k;
@@ -42,7 +46,7 @@ sub _diff_HASH {
     }
     elsif (ref($a->{$k})) {
       if (my $sub = __PACKAGE__->can("_diff_" . ref($a->{$k}))) {
-        push @diff, $sub->($a->{$k}, $b->{$k}, @path, $k);
+        push @diff, $sub->($a->{$k}, $b->{$k}, $seen, @path, $k);
       }
       else {
         push @diff, {path => [@path, $k], a => $a->{$k}, b => $b->{$k}};
@@ -57,8 +61,10 @@ sub _diff_HASH {
 }
 
 sub _diff_ARRAY {
-  my ($a, $b, @path) = @_;
+  my ($a, $b, $seen, @path) = @_;
   return {path => \@path, a => $a, b => $b} unless ref($a) eq ref($b);
+
+  return if $seen->{ refaddr($a) . ':' . refaddr($b) }++;
 
   my @diff;
   my $n = $#$a > $#$b ? $#$a : $#$b;
@@ -72,7 +78,7 @@ sub _diff_ARRAY {
     }
     elsif (ref($a->[$i])) {
       if (my $sub = __PACKAGE__->can("_diff_" . ref($a->[$i]))) {
-        push @diff, $sub->($a->[$i], $b->[$i], @path, $i);
+        push @diff, $sub->($a->[$i], $b->[$i], $seen, @path, $i);
       }
       else {
         push @diff, {path => [@path, $i], a => $a->[$i], b => $b->[$i]};
