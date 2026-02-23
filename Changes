@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.113002  2026-02-22 19:07:33-05:00 America/New_York
         - cyclical data structures no longer recurse infinitely
         - no longer ignores top level undef values in the left hand
           side; this is very much like the previously-fixed
