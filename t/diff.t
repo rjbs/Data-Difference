@@ -9,6 +9,7 @@ BEGIN { use_ok('Data::Difference', 'data_diff'); }
 
 my @tests = (
   {a => undef, b => undef, out => []},
+  {a => undef, b => 1,     out => [{path => [], a => undef, b => 1}]},
   {a => 1,     b => 2,     out => [{path => [], a => 1, b => 2}]},
   {a => [1, 2, 3], b => [1, 2], out => [{path => [2], a => 3}]},
   {a => [1, 2], b => [1, 2, 3], out => [{path => [2], b => 3}]},

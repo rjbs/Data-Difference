@@ -20,7 +20,7 @@ sub data_diff {
       return {path => [], a => $left, b => $right};
     }
   }
-  elsif (defined $left ? defined $right ? $left ne $right : 1 : 0) {
+  elsif (defined $left ? defined $right ? $left ne $right : 1 : defined $right) {
     return {path => [], a => $left, b => $right};
   }
 
