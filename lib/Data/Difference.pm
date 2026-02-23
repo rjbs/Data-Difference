@@ -32,7 +32,9 @@ sub _diff_HASH {
 
   return {path => \@path, a => $left, b => $right} unless ref($left) eq ref($right);
 
-  return if $seen->{ Scalar::Util::refaddr($left) . ':' . Scalar::Util::refaddr($right) }++;
+  my $seen_key = Scalar::Util::refaddr($left) . ':' . Scalar::Util::refaddr($right);
+  return if $seen->{$seen_key};
+  local $seen->{$seen_key} = 1;
 
   my @diff;
   my %k;
@@ -64,7 +66,9 @@ sub _diff_ARRAY {
   my ($left, $right, $seen, @path) = @_;
   return {path => \@path, a => $left, b => $right} unless ref($left) eq ref($right);
 
-  return if $seen->{ Scalar::Util::refaddr($left) . ':' . Scalar::Util::refaddr($right) }++;
+  my $seen_key = Scalar::Util::refaddr($left) . ':' . Scalar::Util::refaddr($right);
+  return if $seen->{$seen_key};
+  local $seen->{$seen_key} = 1;
 
   my @diff;
   my $n = $#$left > $#$right ? $#$left : $#$right;

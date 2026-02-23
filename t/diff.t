@@ -111,4 +111,53 @@ subtest "circular structure" => sub {
   }
 };
 
+subtest "shared sub-structures (DAG)" => sub {
+  {
+    my $shared_l = { x => 1 };
+    my $left = { a => $shared_l, b => $shared_l };
+
+    my $shared_r = { x => 2 };
+    my $right = { a => $shared_r, b => $shared_r };
+
+    eq_or_diff(
+      [data_diff($left, $right)],
+      [
+        {path => ['a', 'x'], a => 1, b => 2},
+        {path => ['b', 'x'], a => 1, b => 2},
+      ],
+      "shared sub-structure diff reported in each location",
+    );
+  }
+
+  {
+    my $shared_l = { x => 1 };
+    my $left = { a => $shared_l, b => $shared_l };
+
+    my $shared_r = { x => 1 };
+    my $right = { a => $shared_r, b => $shared_r };
+
+    eq_or_diff(
+      [data_diff($left, $right)],
+      [],
+      "identical shared sub-structures: no diff",
+    );
+  }
+
+  {
+    my $shared = {};
+    $shared->{self} = $shared;
+    my $left = { a => $shared, b => $shared };
+
+    my $shared_r = {};
+    $shared_r->{self} = $shared_r;
+    my $right = { a => $shared_r, b => $shared_r };
+
+    eq_or_diff(
+      [data_diff($left, $right)],
+      [],
+      "identical cyclic shared sub-structures: no diff",
+    );
+  }
+};
+
 done_testing();
